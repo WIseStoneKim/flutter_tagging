@@ -314,7 +314,6 @@ class _FlutterTaggingState extends State<FlutterTagging> {
       ),
       suggestionsCallback:widget.suggestionsCallback ,
       itemBuilder: (context, suggestion) {
-
         return labeledController.text.length !=0 ?ListTile(
           title: Text(suggestion['name']),
         ): Container();

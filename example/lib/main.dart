@@ -61,7 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 onChanged: (result) {
                   setState(() {
                     text = result.toString();
-                    print(_serchQuery.text);
                   });
                 },
 
@@ -71,12 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: 20.0,
             ),
-            Center(
-              child: Text(
-                text,
-                style: TextStyle(color: Colors.pink),
-              ),
-            )
+
           ],
         ),
       ),
