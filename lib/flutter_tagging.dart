@@ -35,6 +35,7 @@ library flutter_tagging;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 
 typedef FlutterTaggingCallBack(dynamic);
 typedef void SuggestionSelectionCallback<T>(T suggestion);
@@ -206,14 +207,18 @@ class FlutterTagging extends StatefulWidget {
   /// The decoration of the material sheet that contains the suggestions.
   ///
   /// If null, default decoration with an elevation of 4.0 is used
+
   final SuggestionsBoxDecoration suggestionsBoxDecoration;
+
+  final TextEditingController textController;
 
   /// Creates a [FlutterTagging] Widget
   FlutterTagging({
     @required this.onChanged,
     @required this.textFieldDecoration,
     @required this.suggestionsCallback,
-    @required this.addButtonWidget,
+    this.textController,
+    this.addButtonWidget,
     this.deleteIcon = const Icon(Icons.cancel, size: 20.0),
     this.chipsColor,
     this.chipsPadding,
@@ -307,90 +312,12 @@ class _FlutterTaggingState extends State<FlutterTagging> {
         controller: labeledController,
         decoration: widget.textFieldDecoration,
       ),
-      suggestionsCallback: widget.suggestionsCallback,
+      suggestionsCallback:widget.suggestionsCallback ,
       itemBuilder: (context, suggestion) {
-        if (labeledChips != null) {
-          for (var chips in labeledChips) {
-            var tag = {
-              'name': chips.key.toString().split("'")[1],
-              'value': _selectedTagValues[chips.key.toString().split("'")[1]]
-            };
-            print(suggestion);
-            print(tag);
-            if (suggestion.toString() == tag.toString()) {
-              return Container();
-            }
-          }
-        }
-        return ListTile(
+
+        return labeledController.text.length !=0 ?ListTile(
           title: Text(suggestion['name']),
-          trailing: suggestion['value'] == 0
-              ? InkWell(
-                  child: widget.addButtonWidget,
-                  onTap: () {
-                    setState(() {
-                      _selectedTagValues[suggestion['name']] =
-                          suggestion['value'];
-                      labeledController.clear();
-                      labeledChips.add(
-                        Chip(
-                          key: Key(suggestion['name']),
-                          label: Text(
-                            suggestion['name'],
-                            style: TextStyle(
-                                fontSize: widget.chipsFontSize,
-                                color: widget.chipsFontColor,
-                                fontFamily: widget.chipsFontFamily),
-                          ),
-                          labelPadding: widget.chipsPadding,
-                          deleteIcon: widget.deleteIcon,
-                          backgroundColor: widget.chipsColor,
-                          onDeleted: () {
-                            if (labeledChips.length > 0) {
-                              for (var chips in labeledChips) {
-                                if (chips.key
-                                    .toString()
-                                    .contains(suggestion['name'])) {
-                                  setState(() {
-                                    labeledChips.remove(chips);
-                                    _selectedTagValues
-                                        .remove(suggestion['name']);
-                                    List<dynamic> tags = <dynamic>[];
-                                    var tag;
-                                    for (var chips in labeledChips) {
-                                      tag = {
-                                        'name':
-                                            chips.key.toString().split("'")[1],
-                                        'value': _selectedTagValues[
-                                            chips.key.toString().split("'")[1]]
-                                      };
-                                      tags.add(tag);
-                                    }
-                                    widget.onChanged(tags);
-                                  });
-                                }
-                              }
-                            }
-                          },
-                        ),
-                      );
-                      List<dynamic> tags = <dynamic>[];
-                      var tag;
-                      for (var chips in labeledChips) {
-                        tag = {
-                          'name': chips.key.toString().split("'")[1],
-                          'value': _selectedTagValues[
-                              chips.key.toString().split("'")[1]]
-                        };
-                        tags.add(tag);
-                      }
-                      _focusNode.unfocus();
-                      widget.onChanged(tags);
-                    });
-                  },
-                )
-              : null,
-        );
+        ): Container();
       },
       onSuggestionSelected: (suggestion) {
         setState(() {
